@@ -8,17 +8,19 @@ class ResearchAgent:
         self.max_results = max_results
         self.client = arxiv.Client()
 
-    def search_papers(self, topic):
+    def search_papers(self, topic, start=0):
 
         search = arxiv.Search(
             query=topic,
             max_results=self.max_results,
-            sort_by=arxiv.SortCriterion.Relevance
+            sort_by=arxiv.SortCriterion.Relevance,
+            start=start
         )
 
         papers = []
 
         for result in self.client.results(search):
+
             paper = {
                 "title": result.title,
                 "authors": [author.name for author in result.authors],
@@ -36,21 +38,11 @@ if __name__ == "__main__":
 
     agent = ResearchAgent(max_results=5)
 
-    topic = input("Enter your research topic or paper title: ")
+    topic = input("Enter research topic: ")
 
-    results = agent.search_papers(topic)
+    results = agent.search_papers(topic, start=0)
 
-    if results:
-        print("\nResearch Papers Found:\n")
-
-        for i, paper in enumerate(results, start=1):
-            print(f"\nPaper {i}:")
-            print("Title:", paper["title"])
-            print("Authors:", ", ".join(paper["authors"]))
-            print("Published:", paper["published"])
-            print("Abstract:", paper["abstract"])
-            print("PDF:", paper["pdf_url"])
-            print("-" * 70)
-
-    else:
-        print("No research papers found.")
+    for i, paper in enumerate(results, start=1):
+        print(f"\nPaper {i}:")
+        print("Title:", paper["title"])
+        print("Published:", paper["published"])
